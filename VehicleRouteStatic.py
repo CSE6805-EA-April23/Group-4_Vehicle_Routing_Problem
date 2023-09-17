@@ -39,5 +39,8 @@ def Mutation():
 def CrossOver():
     print("do CrossOver")
 
+def outRoute():
+	print ("show route")
+
 
 #####Check########
