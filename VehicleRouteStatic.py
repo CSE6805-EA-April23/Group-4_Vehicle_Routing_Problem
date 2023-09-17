@@ -42,5 +42,8 @@ def CrossOver():
 def outRoute():
 	print ("show route")
 
+def removeRoute():
+	print("delete")
+
 
 #####Check########
