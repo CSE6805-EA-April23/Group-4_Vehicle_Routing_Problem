@@ -7,13 +7,13 @@ def UserInputHandle():
 
 def graphGeneration():
     print("Prepare Graph")
-
+    
 
 
 def generateRoute():
     print("Generate Route")
 
-    
+
 
 
 def ParentInitilization():
@@ -38,3 +38,6 @@ def Mutation():
 
 def CrossOver():
     print("do CrossOver")
+
+
+#####Check########
