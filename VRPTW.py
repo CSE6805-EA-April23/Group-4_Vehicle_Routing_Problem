@@ -304,37 +304,6 @@ if __name__ == '__main__':
  
  
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
 def print_route(route, merge=False):
     '''gavrptw.core.print_route(route, merge=False)'''
     route_str = '0'
@@ -359,10 +328,7 @@ fil2 = os.path.join('content','content','data','json','C204.json')
 #print(fil2)
 file= open('/content/data/json/C204.json','r')
 # print(file.read())
-print(BASE_DIR)    
-    '''gavrptw.uitls.calculate_distance(customer1, customer2)'''
-    return ((customer1['coordinates']['x'] - customer2['coordinates']['x'])**2 + \
-        (customer1['coordinates']['y'] - customer2['coordinates']['y'])**2)**0.5
+print(BASE_DIR)
 
 
 
