@@ -30,8 +30,7 @@ def print_route(route, merge=False):
             print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str}')
         route_str = f'{route_str} - 0'
     if merge:
-        print(route_str)
-   
+        print(route_str)  
 
 def guess_path_type(path):
     '''gavrptw.uitls.guess_path_type(path)'''
