@@ -15,6 +15,23 @@ import io
 import fnmatch
 from json import load, dump
 
+def print_route(route, merge=False):
+    '''gavrptw.core.print_route(route, merge=False)'''
+    route_str = '0'
+    sub_route_count = 0
+    for sub_route in route:
+        sub_route_count += 1
+        sub_route_str = '0'
+        for customer_id in sub_route:
+            sub_route_str = f'{sub_route_str} - {customer_id}'
+            route_str = f'{route_str} - {customer_id}'
+        sub_route_str = f'{sub_route_str} - 0'
+        if not merge:
+            print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str}')
+        route_str = f'{route_str} - 0'
+    if merge:
+        print(route_str)
+   
 
 def guess_path_type(path):
     '''gavrptw.uitls.guess_path_type(path)'''
@@ -46,9 +63,9 @@ def exist(path, overwrite=False, display_info=True):
 def load_instance(json_file):
     '''gavrptw.uitls.load_instance(json_file)'''
 
-    if exist(path='/content/data/json/C204.json', overwrite=False, display_info=True):
+    if exist(path='C:\Genetic Algo\py-ga-VRPTW\data\json\C204.json', overwrite=False, display_info=True):
         # print("file exist")
-        with io.open('/content/data/json/C204.json', 'rt', encoding='utf-8', newline='') as file_object:
+        with io.open('C:\Genetic Algo\py-ga-VRPTW\data\json\C204.json', 'rt', encoding='utf-8', newline='') as file_object:
             return load(file_object)
     return None
 
@@ -268,8 +285,6 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     print_route(ind2route(best_ind, instance))
     print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
-
-
 #driver cells
 '''sample_C204.py'''
 import random
@@ -298,38 +313,19 @@ def main():
         wait_cost=wait_cost, delay_cost=delay_cost, ind_size=ind_size, pop_size=pop_size, \
         cx_pb=cx_pb, mut_pb=mut_pb, n_gen=n_gen, export_csv=export_csv)
 
+#this BASE_DIR is dedicated for base path
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+#print(os.path.join(BASE_DIR, 'data', 'json'))
+fil2 = os.path.join('Genetic Algo','py-ga-VRPTW','data','json','C204.json')
+#print(fil2)
+file= open('C:\Genetic Algo\py-ga-VRPTW\data\json\C204.json','r')
+# print(file.read())
+print(BASE_DIR)
 
 if __name__ == '__main__':
     main()
  
  
- 
-def print_route(route, merge=False):
-    '''gavrptw.core.print_route(route, merge=False)'''
-    route_str = '0'
-    sub_route_count = 0
-    for sub_route in route:
-        sub_route_count += 1
-        sub_route_str = '0'
-        for customer_id in sub_route:
-            sub_route_str = f'{sub_route_str} - {customer_id}'
-            route_str = f'{route_str} - {customer_id}'
-        sub_route_str = f'{sub_route_str} - 0'
-        if not merge:
-            print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str}')
-        route_str = f'{route_str} - 0'
-    if merge:
-        print(route_str)
-   
-#this BASE_DIR is dedicated for base path
-BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-#print(os.path.join(BASE_DIR, 'data', 'json'))
-fil2 = os.path.join('content','content','data','json','C204.json')
-#print(fil2)
-file= open('/content/data/json/C204.json','r')
-# print(file.read())
-print(BASE_DIR)
-
 
 
 
