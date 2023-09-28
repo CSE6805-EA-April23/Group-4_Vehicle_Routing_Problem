@@ -193,12 +193,12 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     cx_pb, mut_pb, n_gen, export_csv=False, customize_data=False):
     '''gavrptw.core.run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost,
         ind_size, pop_size, cx_pb, mut_pb, n_gen, export_csv=False, customize_data=False)'''
-    if customize_data:
-        json_data_dir = os.path.join(BASE_DIR, 'data', 'json_customize')
-        print(os.path.join(BASE_DIR, 'data', 'json_customize'))
-    else:
-        json_data_dir = os.path.join(BASE_DIR, 'data', 'json')
-        print(os.path.join(BASE_DIR, 'data', 'json'))
+    # if customize_data:
+    #     json_data_dir = os.path.join(BASE_DIR, 'data', 'json_customize')
+    #     print(os.path.join(BASE_DIR, 'data', 'json_customize'))
+    # else:
+    json_data_dir = os.path.join(BASE_DIR, 'data', 'json')
+    print(os.path.join(BASE_DIR, 'data', 'json'))
 
     json_file = os.path.join(json_data_dir, f'{instance_name}.json')
     instance = load_instance(json_file=json_file)
@@ -216,12 +216,12 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     # Operator registering
     toolbox.register('evaluate', eval_vrptw, instance=instance, unit_cost=unit_cost, \
         init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
-    toolbox.register('select', tools.selRoulette)
+    # toolbox.register('select', tools.selRoulette) #FPS
+    toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
     toolbox.register('mate', cx_partially_matched)
     toolbox.register('mutate', mut_inverse_indexes)
     pop = toolbox.population(n=pop_size)
-    # Results holders for exporting results to CSV file
-    csv_data = []
+
     print('Start of evolution')
     # Evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
