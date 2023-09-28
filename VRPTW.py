@@ -5,16 +5,10 @@ from csv import DictWriter
 from deap import base, creator, tools
 import fnmatch
 from json import load, dump
-
+from filelocation import filePath
 # -*- coding: utf-8 -*-
 
 '''gavrptw/uitls.py'''
-
-import os
-import io
-import fnmatch
-from json import load, dump
-
 def print_route(route, merge=False):
     '''gavrptw.core.print_route(route, merge=False)'''
     route_str = '0'
@@ -61,11 +55,14 @@ def exist(path, overwrite=False, display_info=True):
 
 def load_instance(json_file):
     '''gavrptw.uitls.load_instance(json_file)'''
-
-    if exist(path='C:\Genetic Algo\py-ga-VRPTW\data\json\C204.json', overwrite=False, display_info=True):
+    #Converted filePath generic for All
+    if exist(path=filePath(), overwrite=False, display_info=True):
         # print("file exist")
-        with io.open('C:\Genetic Algo\py-ga-VRPTW\data\json\C204.json', 'rt', encoding='utf-8', newline='') as file_object:
+        #Converted filePath generic for All
+        with io.open(filePath(), 'r', encoding='utf-8', newline='') as file_object:
             return load(file_object)
+    else:
+        print("Check Your File Path")
     return None
 
 def merge_rules(rules):
@@ -206,7 +203,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     json_file = os.path.join(json_data_dir, f'{instance_name}.json')
     instance = load_instance(json_file=json_file)
     if instance is None:
-        print("Eh")
+        print("Please Check Your file path")
         return
     creator.create('FitnessMax', base.Fitness, weights=(1.0, ))
     creator.create('Individual', list, fitness=creator.FitnessMax)
@@ -266,17 +263,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
         print(f'  Max {max(fits)}')
         print(f'  Avg {mean}')
         print(f'  Std {std}')
-        # Write data to holders for exporting results to CSV file
-        if export_csv:
-            csv_row = {
-                'generation': gen,
-                'evaluated_individuals': len(invalid_ind),
-                'min_fitness': min(fits),
-                'max_fitness': max(fits),
-                'avg_fitness': mean,
-                'std_fitness': std,
-            }
-            csv_data.append(csv_row)
+       
     print('-- End of (successful) evolution --')
     best_ind = tools.selBest(pop, 1)[0]
     print(f'Best individual: {best_ind}')
@@ -286,14 +273,13 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
 
 #driver cells
 '''sample_C204.py'''
-import random
 
 
 def main():
     '''main()'''
     random.seed(64)
 
-    instance_name = 'C204'
+    instance_name = 'C222'
 
     unit_cost = 8.0
     init_cost = 100.0
@@ -314,21 +300,9 @@ def main():
 
 #this BASE_DIR is dedicated for base path
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-#print(os.path.join(BASE_DIR, 'data', 'json'))
-fil2 = os.path.join('Genetic Algo','py-ga-VRPTW','data','json','C204.json')
-#print(fil2)
-file= open('C:\Genetic Algo\py-ga-VRPTW\data\json\C204.json','r')
+# file= open(filePath(),'r')
 # print(file.read())
 print(BASE_DIR)
 
 if __name__ == '__main__':
     main()
- 
- 
-
-
-
-
-
-
-
