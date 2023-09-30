@@ -211,24 +211,32 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     creator.create('Individual', list, fitness=creator.FitnessMax)
     toolbox = base.Toolbox()
     # Attribute generator
-    toolbox.register('indexes', random.sample, range(1, ind_size + 1), ind_size)
+    t1= toolbox.register('indexes', random.sample, range(1, ind_size + 1), ind_size)
+    print("t1 ",t1)
     # Structure initializers
-    toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.indexes)
-    toolbox.register('population', tools.initRepeat, list, toolbox.individual)
+    t2= toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.indexes)
+    print("t2 ",t2)
+    t3 = toolbox.register('population', tools.initRepeat, list, toolbox.individual)
+    print("t3 ", t3)
     # Operator registering
-    toolbox.register('evaluate', eval_vrptw, instance=instance, unit_cost=unit_cost, \
+    t4 = toolbox.register('evaluate', eval_vrptw, instance=instance, unit_cost=unit_cost, \
         init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
+    print("t4 ",t4)
     # toolbox.register('select', tools.selRoulette) #FPS
-    toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
-    toolbox.register('mate', cx_partially_matched)
-
-    toolbox.register('mutate', mut_inverse_indexes)
-    
+    t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
+    print("t5 ", t5)
+    t6=toolbox.register('mate', cx_partially_matched)
+    print("t6 ", t6)
+    t7=toolbox.register('mutate', mut_inverse_indexes)
+    print("t7 ", t7)
+    print(pop_size)
     pop = toolbox.population(n=pop_size)
+    print("t8 ", pop)
 
     print('Start of evolution')
     # Evaluate the entire population
     fitnesses = list(map(toolbox.evaluate, pop))
+    # print("fit ",fitnesses)
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
     #print(f'  Evaluated {len(pop)} individuals')
@@ -272,10 +280,10 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
        
     print('-- End of (successful) evolution --')
     best_ind = tools.selBest(pop, 1)[0]
-    print(f'Best individual: {best_ind}')
-    print(f'Fitness: {best_ind.fitness.values[0]}')
-    print_route(ind2route(best_ind, instance))
-    print(f'Total cost: {1 / best_ind.fitness.values[0]}')
+    # print(f'Best individual: {best_ind}')
+    # print(f'Fitness: {best_ind.fitness.values[0]}')
+    # print_route(ind2route(best_ind, instance))
+    # print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
 #driver cells
 '''sample_C204.py'''
@@ -293,7 +301,7 @@ def main():
     delay_cost = 1.5
 
     ind_size = 100
-    pop_size = 400
+    pop_size = 2
     cx_pb = 0.85
     mut_pb = 0.02
     n_gen = 300
