@@ -42,15 +42,15 @@ def exist(path, overwrite=False, display_info=True):
     '''gavrptw.uitls.exist(path, overwrite=False, display_info=True)'''
     if os.path.exists(path):
         if overwrite:
-            if display_info:
-                print(f'{guess_path_type(path)}: {path} exists. Overwrite.')
+            # if display_info:
+            #     print(f'{guess_path_type(path)}: {path} exists. Overwrite.')
             os.remove(path)
             return False
-        if display_info:
-            print(f'{guess_path_type(path)}: {path} exists.')
+        # if display_info:
+            # print(f'{guess_path_type(path)}: {path} exists.')
         return True
-    if display_info:
-        print(f'{guess_path_type(path)}: {path} does not exist.')
+    # if display_info:
+    #     print(f'{guess_path_type(path)}: {path} does not exist.')
     return False
 
 def load_instance(json_file):
@@ -163,6 +163,8 @@ def eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, de
     return (fitness, )
  
 def cx_partially_matched(ind1, ind2):
+    print("CROSSOVER1", ind1 , "CROSSOVER2", ind2)
+    return
     # print("Crossing")
     '''gavrptw.core.cx_partially_matched(ind1, ind2)'''
     cxpoint1, cxpoint2 = sorted(random.sample(range(min(len(ind1), len(ind2))), 2))
@@ -198,7 +200,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     #     print(os.path.join(BASE_DIR, 'data', 'json_customize'))
     # else:
     json_data_dir = os.path.join(BASE_DIR, 'data', 'json')
-    print(os.path.join(BASE_DIR, 'data', 'json'))
+    #print(os.path.join(BASE_DIR, 'data', 'json'))
 
     json_file = os.path.join(json_data_dir, f'{instance_name}.json')
     instance = load_instance(json_file=json_file)
@@ -219,7 +221,9 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     # toolbox.register('select', tools.selRoulette) #FPS
     toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
     toolbox.register('mate', cx_partially_matched)
+
     toolbox.register('mutate', mut_inverse_indexes)
+    
     pop = toolbox.population(n=pop_size)
 
     print('Start of evolution')
@@ -227,42 +231,44 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
-    print(f'  Evaluated {len(pop)} individuals')
+    #print(f'  Evaluated {len(pop)} individuals')
     # Begin the evolution
-    for gen in range(n_gen):
-        print(f'-- Generation {gen} --')
-        # Select the next generation individuals
-        offspring = toolbox.select(pop, len(pop))
-        # Clone the selected individuals
-        offspring = list(map(toolbox.clone, offspring))
-        # Apply crossover and mutation on the offspring
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < cx_pb:
-                toolbox.mate(child1, child2)
-                del child1.fitness.values
-                del child2.fitness.values
-        for mutant in offspring:
-            if random.random() < mut_pb:
-                toolbox.mutate(mutant)
-                del mutant.fitness.values
-        # Evaluate the individuals with an invalid fitness
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = map(toolbox.evaluate, invalid_ind)
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit
-        print(f'  Evaluated {len(invalid_ind)} individuals')
-        # The population is entirely replaced by the offspring
-        pop[:] = offspring
-        # Gather all the fitnesses in one list and print the stats
-        fits = [ind.fitness.values[0] for ind in pop]
-        length = len(pop)
-        mean = sum(fits) / length
-        sum2 = sum([x**2 for x in fits])
-        std = abs(sum2 / length - mean**2)**0.5
-        print(f'  Min {min(fits)}')
-        print(f'  Max {max(fits)}')
-        print(f'  Avg {mean}')
-        print(f'  Std {std}')
+    # for gen in range(n_gen):
+    #     print(f'-- Generation {gen} --')
+    #     # Select the next generation individuals
+    #     offspring = toolbox.select(pop, len(pop))
+    #     # Clone the selected individuals
+    #     offspring = list(map(toolbox.clone, offspring))
+    #     # Apply crossover and mutation on the offspring
+    #     for child1, child2 in zip(offspring[::2], offspring[1::2]):
+    #         if random.random() < cx_pb:
+    #             toolbox.mate(child1, child2)
+    #             del child1.fitness.values
+    #             del child2.fitness.values
+    #     for mutant in offspring:
+    #         if random.random() < mut_pb:
+    #             toolbox.mutate(mutant)
+    #             del mutant.fitness.values
+    #     # Evaluate the individuals with an invalid fitness
+    #     invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+    #     fitnesses = map(toolbox.evaluate, invalid_ind)
+    #     for ind, fit in zip(invalid_ind, fitnesses):
+    #         ind.fitness.values = fit
+    #     print(f'  Evaluated {len(invalid_ind)} individuals')
+    #     # The population is entirely replaced by the offspring
+    #     pop[:] = offspring
+    #     # Gather all the fitnesses in one list and print the stats
+    #     fits = [ind.fitness.values[0] for ind in pop]
+    #     length = len(pop)
+
+
+        # mean = sum(fits) / length
+        # sum2 = sum([x**2 for x in fits])
+        # std = abs(sum2 / length - mean**2)**0.5
+        # print(f'  Min {min(fits)}')
+        # print(f'  Max {max(fits)}')
+        # print(f'  Avg {mean}')
+        # print(f'  Std {std}')
        
     print('-- End of (successful) evolution --')
     best_ind = tools.selBest(pop, 1)[0]
