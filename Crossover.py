@@ -59,7 +59,40 @@ def cx_partially_matched(ind1, ind2):
     return ind1, ind2
 
 
-cx_partially_matched([1,2,9,4,5,6,7,8,3],[3,9,4,7,6,5,2,1,8])
+def order_cross_over(ind1, ind2):
+    child1 = [0]*len(ind1)
+    child2 = [0] *len(ind2)
+    # print(child1)
+    cxpoint1, cxpoint2 = sorted(random.sample(range(min(len(ind1), len(ind2))), 2))
+    # print("CutPoint1 ",cxpoint1) #0
+    # print("CutPoint2 ", cxpoint2)
+    backup = cxpoint1
+    part1 = ind1[cxpoint1:cxpoint2+1] #slice data 1
+    part2 = ind2[cxpoint1:cxpoint2+1] #slice data 2
+
+    i=0
+    while(cxpoint1<cxpoint2):
+        child1[cxpoint1]=part1[i]
+        cxpoint1+=1 # 6
+        i+=1
+    i=0
+    cxpoint1 = backup
+
+    while(cxpoint1<cxpoint2):
+        child2[cxpoint1]=part2[i]
+        cxpoint1+=1
+        i+=1
+
+    print(child1)
+    print(child2)
+
+
+
+
+
+
+
+order_cross_over([1,2,9,4,5,6,7,8,3],[3,9,4,7,6,5,2,1,8])
 
 
 
