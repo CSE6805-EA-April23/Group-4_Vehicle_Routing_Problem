@@ -8,9 +8,7 @@ from json import load, dump
 from filelocation import filePath
 # -*- coding: utf-8 -*-
 
-'''gavrptw/uitls.py'''
 def print_route(route, merge=False):
-    '''gavrptw.core.print_route(route, merge=False)'''
     route_str = '0'
     sub_route_count = 0
     for sub_route in route:
@@ -27,7 +25,6 @@ def print_route(route, merge=False):
         print(route_str)  
 
 def guess_path_type(path):
-    '''gavrptw.uitls.guess_path_type(path)'''
     if os.path.isfile(path):
         return 'File'
     if os.path.isdir(path):
@@ -39,7 +36,6 @@ def guess_path_type(path):
     return 'Path'
 
 def exist(path, overwrite=False, display_info=True):
-    '''gavrptw.uitls.exist(path, overwrite=False, display_info=True)'''
     if os.path.exists(path):
         if overwrite:
             # if display_info:
@@ -54,7 +50,6 @@ def exist(path, overwrite=False, display_info=True):
     return False
 
 def load_instance(json_file):
-    '''gavrptw.uitls.load_instance(json_file)'''
     #Converted filePath generic for All
     if exist(path=filePath(), overwrite=False, display_info=True):
         # print("file exist")
@@ -66,7 +61,6 @@ def load_instance(json_file):
     return None
 
 def merge_rules(rules):
-    '''gavrptw.uitls.merge_rules(rules)'''
     is_fully_merged = True
     for round1 in rules:
         if round1[0] == round1[1]:
@@ -82,12 +76,10 @@ def merge_rules(rules):
     return rules, is_fully_merged
 
 def calculate_distance(customer1, customer2):
-    '''gavrptw.uitls.calculate_distance(customer1, customer2)'''
     return ((customer1['coordinates']['x'] - customer2['coordinates']['x'])**2 + \
         (customer1['coordinates']['y'] - customer2['coordinates']['y'])**2)**0.5
 
 def ind2route(individual, instance):
-    '''gavrptw.core.ind2route(individual, instance)'''
     route = []
     vehicle_capacity = instance['vehicle_capacity']
     depart_due_time = instance['depart']['due_time']
@@ -126,8 +118,7 @@ def ind2route(individual, instance):
     return route
  
 def eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, delay_cost=0):
-    '''gavrptw.core.eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0,
-        delay_cost=0)'''
+   
     total_cost = 0
     route = ind2route(individual, instance)
     total_cost = 0
@@ -265,13 +256,13 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
         length = len(pop)
 
 
-        # mean = sum(fits) / length
-        # sum2 = sum([x**2 for x in fits])
-        # std = abs(sum2 / length - mean**2)**0.5
-        # print(f'  Min {min(fits)}')
-        # print(f'  Max {max(fits)}')
-        # print(f'  Avg {mean}')
-        # print(f'  Std {std}')
+        mean = sum(fits) / length
+        sum2 = sum([x**2 for x in fits])
+        std = abs(sum2 / length - mean**2)**0.5
+        print(f'  Min {min(fits)}')
+        print(f'  Max {max(fits)}')
+        print(f'  Avg {mean}')
+        print(f'  Std {std}')
        
     print('-- End of (successful) evolution --')
     best_ind = tools.selBest(pop, 1)[0]
@@ -280,8 +271,6 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     print_route(ind2route(best_ind, instance))
     print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
-#driver cells
-'''sample_C204.py'''
 
 
 def main():
