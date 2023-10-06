@@ -207,15 +207,15 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     t3 = toolbox.register('population', tools.initRepeat, list, toolbox.individual)
     print("t3 ", t3)
     # Operator registering
-    t4 = toolbox.register('evaluate', eval_vrptw, instance=instance, unit_cost=unit_cost, \
+    t4 = toolbox.register('evaluate', evaluate_individual, instance=instance, unit_cost=unit_cost, \
         init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
     print("t4 ",t4)
     # toolbox.register('select', tools.selRoulette) #FPS
     t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
     print("t5 ", t5)
-    t6=toolbox.register('mate', orderXover)
+    t6=toolbox.register('mate', order_cross_over)
     print("t6 ", t6)
-    t7=toolbox.register('mutate', mut_inverse_indexes)
+    t7=toolbox.register('mutate', inverse_mutation)
     print("t7 ", t7)
     print(pop_size)
     pop = toolbox.population(n=pop_size)
