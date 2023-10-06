@@ -213,7 +213,8 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
         init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
     print("t4 ",t4)
     # toolbox.register('select', tools.selRoulette) #FPS
-    t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
+    #t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
+    t5 = toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
     print("t5 ", t5)
     t6=toolbox.register('mate', order_cross_over)
     print("t6 ", t6)
