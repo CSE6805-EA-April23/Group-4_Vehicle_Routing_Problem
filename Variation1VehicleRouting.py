@@ -79,7 +79,7 @@ def calculate_distance(customer1, customer2):
     return ((customer1['coordinates']['x'] - customer2['coordinates']['x'])**2 + \
         (customer1['coordinates']['y'] - customer2['coordinates']['y'])**2)**0.5
 
-def ind2route(individual, instance):
+def individual_to_route_decoding(individual, instance):
     route = []
     vehicle_capacity = instance['vehicle_capacity']
     depart_due_time = instance['depart']['due_time']
@@ -117,10 +117,10 @@ def ind2route(individual, instance):
         route.append(sub_route)
     return route
  
-def eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, delay_cost=0):
+def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, delay_cost=0):
    
     total_cost = 0
-    route = ind2route(individual, instance)
+    route = individual_to_route_decoding(individual, instance)
     total_cost = 0
     for sub_route in route:
         sub_route_time_cost = 0
@@ -153,29 +153,31 @@ def eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, de
     fitness = 1.0 / total_cost
     return (fitness, )
  
-def orderXover(ind1, ind2):
-    
+def order_cross_over(ind1, ind2):
     
     # print("Crossing")
+    child1 = [0]*len(ind1)
+    child2 = [0] *len(ind2)
     
     cxpoint1, cxpoint2 = sorted(random.sample(range(min(len(ind1), len(ind2))), 2))
-    part1 = ind2[cxpoint1:cxpoint2+1]
-    part2 = ind1[cxpoint1:cxpoint2+1]
-    rule1to2 = list(zip(part1, part2))
-    is_fully_merged = False
-    while not is_fully_merged:
-        rule1to2, is_fully_merged = merge_rules(rules=rule1to2)
-    rule2to1 = {rule[1]: rule[0] for rule in rule1to2}
-    rule1to2 = dict(rule1to2)
-    ind1 = [gene if gene not in part2 else rule2to1[gene] for gene in ind1[:cxpoint1]] + part2 + \
-        [gene if gene not in part2 else rule2to1[gene] for gene in ind1[cxpoint2+1:]]
-    ind2 = [gene if gene not in part1 else rule1to2[gene] for gene in ind2[:cxpoint1]] + part1 + \
-        [gene if gene not in part1 else rule1to2[gene] for gene in ind2[cxpoint2+1:]]
-  
-    return ind1, ind2
+    #print("CutPoint1 ",cxpoint1) 
+    #print("CutPoint2 ", cxpoint2)
+    backup = cxpoint1
+    part1 = ind1[cxpoint1:cxpoint2+1] #slice data 1
+    part2 = ind2[cxpoint1:cxpoint2+1] #slice data 2
 
-def mut_inverse_indexes(individual):
-    # print("Mutation")
+    i=0
+    while(cxpoint1<cxpoint2):
+        child1[cxpoint1]=part1[i]
+        cxpoint1+=1 
+        i+=1
+    i=0
+    cxpoint1 = backup
+  
+    return child1, child2
+
+def inverse_mutation(individual):
+    
     start, stop = sorted(random.sample(range(len(individual)), 2))
     temp = individual[start:stop+1]
     temp.reverse()
