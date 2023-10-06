@@ -79,7 +79,7 @@ def calculate_distance(customer1, customer2):
     return ((customer1['coordinates']['x'] - customer2['coordinates']['x'])**2 + \
         (customer1['coordinates']['y'] - customer2['coordinates']['y'])**2)**0.5
 
-def ind2route(individual, instance):
+def individual_to_route_decoding(individual, instance):
     route = []
     vehicle_capacity = instance['vehicle_capacity']
     depart_due_time = instance['depart']['due_time']
@@ -117,10 +117,10 @@ def ind2route(individual, instance):
         route.append(sub_route)
     return route
  
-def eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, delay_cost=0):
+def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, delay_cost=0):
    
     total_cost = 0
-    route = ind2route(individual, instance)
+    route = individual_to_route_decoding(individual, instance)
     total_cost = 0
     for sub_route in route:
         sub_route_time_cost = 0
@@ -153,34 +153,38 @@ def eval_vrptw(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, de
     fitness = 1.0 / total_cost
     return (fitness, )
  
-def cx_partially_matched(ind1, ind2):
-    
+def order_cross_over(ind1, ind2):
     
     # print("Crossing")
+    child1 = [0]*len(ind1)
+    child2 = [0] *len(ind2)
     
     cxpoint1, cxpoint2 = sorted(random.sample(range(min(len(ind1), len(ind2))), 2))
-    part2 = ind2[cxpoint1:cxpoint2+1]
-    part1 = ind1[cxpoint1:cxpoint2+1]
-    rule1to2 = list(zip(part1, part2))
-    is_fully_merged = False
-    while not is_fully_merged:
-        rule1to2, is_fully_merged = merge_rules(rules=rule1to2)
-    rule2to1 = {rule[1]: rule[0] for rule in rule1to2}
-    rule1to2 = dict(rule1to2)
-    ind1 = [gene if gene not in part2 else rule2to1[gene] for gene in ind1[:cxpoint1]] + part2 + \
-        [gene if gene not in part2 else rule2to1[gene] for gene in ind1[cxpoint2+1:]]
-    ind2 = [gene if gene not in part1 else rule1to2[gene] for gene in ind2[:cxpoint1]] + part1 + \
-        [gene if gene not in part1 else rule1to2[gene] for gene in ind2[cxpoint2+1:]]
-  
-    return ind1, ind2
+    #print("CutPoint1 ",cxpoint1) 
+    #print("CutPoint2 ", cxpoint2)
+    backup = cxpoint1
+    part1 = ind1[cxpoint1:cxpoint2+1] #slice data 1
+    part2 = ind2[cxpoint1:cxpoint2+1] #slice data 2
 
-def mut_inverse_indexes(individual):
-    # print("Mutation")
-    start, stop = sorted(random.sample(range(len(individual)), 2))
-    temp = individual[start:stop+1]
-    temp.reverse()
-    individual[start:stop+1] = temp
+    i=0
+    while(cxpoint1<cxpoint2):
+        child1[cxpoint1]=part1[i]
+        cxpoint1+=1 
+        i+=1
+    i=0
+    cxpoint1 = backup
+  
+    return child1, child2
+
+def swap_mutation(individual):
+    start, stop = (random.sample(range(len(individual)), 2))
+    #start=random.randint(0,len(ind))
+    #stop=random.randint(0,len(ind))
+    temp=individual[start]
+    individual[start]=individual[stop]
+    individual[stop]=temp
     return (individual, )
+    
 
 def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_size, pop_size, \
     cx_pb, mut_pb, n_gen, export_csv=False, customize_data=False):
@@ -211,7 +215,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     # toolbox.register('select', tools.selRoulette) #FPS
     t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
     print("t5 ", t5)
-    t6=toolbox.register('mate', cx_partially_matched)
+    t6=toolbox.register('mate', orderXover)
     print("t6 ", t6)
     t7=toolbox.register('mutate', mut_inverse_indexes)
     print("t7 ", t7)
