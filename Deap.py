@@ -21,12 +21,13 @@ toolbox.register('indexes', random.sample, range(1, ind_size + 1), ind_size)
 toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.indexes)
 toolbox.register('population', tools.initRepeat, list, toolbox.individual)
 # Operator registering
-toolbox.register('evaluate', eval_vrptw, instance=instance, unit_cost=unit_cost, \
+toolbox.register('evaluate', evaluate_individual, instance=instance, unit_cost=unit_cost, \
     init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
 # toolbox.register('select', tools.selRoulette) #FPS
 toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
 toolbox.register('mate', cx_partially_matched)
-
-toolbox.register('mutate', mut_inverse_indexes)
+toolbox.register('mate', order_cross_over)
+toolbox.register('mutate', inverse_mutation)
+toolbox.register('mutate', swap_mutation)
 
 pop = toolbox.population(n=pop_size)
