@@ -1,5 +1,6 @@
 # vehicle_routing_problem
 We have used two variants of genetic algorithm to solve this problem.
+
 Variant-1:
 1. Use Fitness Proportionate Selection (FPS) method to select parent individuals
 2. Use Order Crossover between parent individuals to create children
