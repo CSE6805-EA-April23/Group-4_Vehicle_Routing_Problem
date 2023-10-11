@@ -153,28 +153,55 @@ def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_c
     fitness = 1.0 / total_cost
     return (fitness, )
  
-def order_cross_over(ind1, ind2):
-    
-    # print("Crossing")
+def cx_partially_mapped(ind1, ind2):
+
     child1 = [0]*len(ind1)
     child2 = [0] *len(ind2)
-    
+    # print(child1)
     cxpoint1, cxpoint2 = sorted(random.sample(range(min(len(ind1), len(ind2))), 2))
-    #print("CutPoint1 ",cxpoint1) 
-    #print("CutPoint2 ", cxpoint2)
+    # print("CutPoint1 ",cxpoint1) #0
+    # print("CutPoint2 ", cxpoint2)
     backup = cxpoint1
     part1 = ind1[cxpoint1:cxpoint2+1] #slice data 1
     part2 = ind2[cxpoint1:cxpoint2+1] #slice data 2
-
+    rule1to2 = list(zip(part1, part2))
     i=0
     while(cxpoint1<cxpoint2):
-        child1[cxpoint1]=part1[i]
-        cxpoint1+=1 
+        child1[cxpoint1]=part2[i]
+        cxpoint1+=1 # 6
         i+=1
     i=0
     cxpoint1 = backup
-  
-    return child1, child2
+
+    while(cxpoint1<cxpoint2):
+        child2[cxpoint1]=part1[i]
+        cxpoint1+=1
+        i+=1
+    i=0
+
+
+    for t1,t2 in rule1to2:
+        print(f't1 {t1} t2 {t2}')
+
+
+    print("before cross ",child1)
+    while i<len(child1):
+        
+        if(child1[i]==0):
+            if(ind1[i] not in child1):
+                child1[i]= ind1[i]
+            else:    
+                for t1,t2 in rule1to2:
+                    if (t1==child1[i]):
+                        if(t2 not in child1):
+                            print("fairuz bolse 0 ", t2)
+                            child1[i] = t2
+                        else:
+                            t1 =t2
+        i+=1
+           
+    #print("CROSS ",child1)
+    return ind1, ind2
 
 def inverse_mutation(individual):
     
@@ -213,7 +240,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     # toolbox.register('select', tools.selRoulette) #FPS
     t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
     print("t5 ", t5)
-    t6=toolbox.register('mate', order_cross_over)
+    t6=toolbox.register('mate', cx_partially_mapped)
     print("t6 ", t6)
     t7=toolbox.register('mutate', inverse_mutation)
     print("t7 ", t7)
