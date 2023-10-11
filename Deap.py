@@ -23,9 +23,9 @@ toolbox.register('population', tools.initRepeat, list, toolbox.individual)
 # Operator registering
 toolbox.register('evaluate', evaluate_individual, instance=instance, unit_cost=unit_cost, \
     init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
-# toolbox.register('select', tools.selRoulette) #FPS
-toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
-toolbox.register('mate', cx_partially_matched)
+toolbox.register('select', tools.selRoulette) #FPS
+#toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
+toolbox.register('mate', cx_partially_mapped)
 toolbox.register('mate', order_cross_over)
 toolbox.register('mutate', inverse_mutation)
 toolbox.register('mutate', swap_mutation)
