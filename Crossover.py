@@ -1,6 +1,6 @@
 
 import random
-def cx_partially_matched(ind1, ind2):
+def cx_partially_mapped(ind1, ind2):
 
     child1 = [0]*len(ind1)
     child2 = [0] *len(ind2)
