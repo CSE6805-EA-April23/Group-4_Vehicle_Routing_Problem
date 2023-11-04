@@ -271,9 +271,9 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     # Operator registering
     toolbox.register('evaluate', evaluate_individual, instance=instance, unit_cost=unit_cost, \
         init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
-    # toolbox.register('select', tools.selRoulette) #FPS
+    toolbox.register('select', tools.selRoulette) #FPS
     #t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
-    toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
+    #toolbox.register('select', tools.selStochasticUniversalSampling) #stochastic SUS
     toolbox.register('mate', order_cross_over)
     toolbox.register('mutate', swap_mutation)
     print(pop_size)
