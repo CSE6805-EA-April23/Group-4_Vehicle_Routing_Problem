@@ -11,6 +11,7 @@ from filelocation import filePath
 def print_route(route, instance,merge=False):
     route_str = '0'
     sub_route_count = 0
+    total_routeCovered =0
    # print(instance["customer_1"]["coordinates"])
     # print("print ",route)
     #print("customer X-cor ", json[])
@@ -36,14 +37,15 @@ def print_route(route, instance,merge=False):
         sub_route_count += 1
         if not merge:
             
+            total_routeCovered = total_routeCovered+ sub_route_distance
                     #sub_route_distance+= calculate_distance("customer_"+str(route[i][j]),"customer_"+str(route[i][j+1]),instance) 
-
+            
             print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str} total-area covered {sub_route_distance}')
-      
+
         route_str = f'{route_str} - 0'
     if merge:
         print(route_str)  
-
+    print("Total Distance Covered by All Vehicle ",total_routeCovered)
 def ind2route(individual, instance):
     '''gavrptw.core.ind2route(individual, instance)'''
     route = []
@@ -289,6 +291,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     #print(os.path.join(BASE_DIR, 'data', 'json'))
 
     json_file = os.path.join(json_data_dir, f'{instance_name}.json')
+    print("jfdshvfuig",json_file)
     JSONData = json_file
     instance = load_instance(json_file=json_file)
     #print(instance)
@@ -374,7 +377,7 @@ def main():
     '''main()'''
     random.seed(64)
 
-    instance_name = 'C222'
+    instance_name = 'C105'
 
     unit_cost = 8.0
     init_cost = 100.0
