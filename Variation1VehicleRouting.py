@@ -8,21 +8,72 @@ from json import load, dump
 from filelocation import filePath
 # -*- coding: utf-8 -*-
 
-def print_route(route, merge=False):
+def print_route(route, instance,merge=False):
     route_str = '0'
     sub_route_count = 0
+   # print(instance["customer_1"]["coordinates"])
+    # print("print ",route)
+    #print("customer X-cor ", json[])
     for sub_route in route:
+        sub_route_distance = 0
         sub_route_count += 1
         sub_route_str = '0'
+        
         for customer_id in sub_route:
+            # sub_route_distance+= calculate_distance("customer_"+str(customer_id),"customer_"+str(customer_id+1),instance) 
             sub_route_str = f'{sub_route_str} - {customer_id}'
             route_str = f'{route_str} - {customer_id}'
+            
         sub_route_str = f'{sub_route_str} - 0'
         if not merge:
-            print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str}')
+            for i in range (sub_route_count,len(route)):
+               for j in range (0, len(sub_route)-1):
+                    sub_route_distance+= calculate_distance("customer_"+str(route[i][j]),"customer_"+str(route[i][j+1]),instance) 
+
+            print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str} total-area covered {sub_route_distance}')
+      
         route_str = f'{route_str} - 0'
     if merge:
         print(route_str)  
+
+def ind2route(individual, instance):
+    '''gavrptw.core.ind2route(individual, instance)'''
+    route = []
+    vehicle_capacity = instance['vehicle_capacity']
+    depart_due_time = instance['depart']['due_time']
+    # Initialize a sub-route
+    sub_route = []
+    vehicle_load = 0
+    elapsed_time = 0
+    last_customer_id = 0
+    for customer_id in individual:
+        # Update vehicle load
+        demand = instance[f'customer_{customer_id}']['demand']
+        updated_vehicle_load = vehicle_load + demand
+        # Update elapsed time
+        service_time = instance[f'customer_{customer_id}']['service_time']
+        return_time = instance['distance_matrix'][customer_id][0]
+        updated_elapsed_time = elapsed_time + \
+            instance['distance_matrix'][last_customer_id][customer_id] + service_time + return_time
+        # Validate vehicle load and elapsed time
+        if (updated_vehicle_load <= vehicle_capacity) and (updated_elapsed_time <= depart_due_time):
+            # Add to current sub-route
+            sub_route.append(customer_id)
+            vehicle_load = updated_vehicle_load
+            elapsed_time = updated_elapsed_time - return_time
+        else:
+            # Save current sub-route
+            route.append(sub_route)
+            # Initialize a new sub-route and add to it
+            sub_route = [customer_id]
+            vehicle_load = demand
+            elapsed_time = instance['distance_matrix'][0][customer_id] + service_time
+        # Update last customer ID
+        last_customer_id = customer_id
+    if sub_route != []:
+        # Save current sub-route before return if not empty
+        route.append(sub_route)
+    return route
 
 def guess_path_type(path):
     if os.path.isfile(path):
@@ -75,9 +126,16 @@ def merge_rules(rules):
                     is_fully_merged = False
     return rules, is_fully_merged
 
-def calculate_distance(customer1, customer2):
-    return ((customer1['coordinates']['x'] - customer2['coordinates']['x'])**2 + \
-        (customer1['coordinates']['y'] - customer2['coordinates']['y'])**2)**0.5
+def calculate_distance(customer1, customer2,instance):
+    if(customer1 == "customer_0"):
+
+        return ((40 - instance[customer2]['coordinates']['x']**2 + \
+                50 - instance[customer2]['coordinates']['y'])**2)**0.5
+    print(customer1," ",instance[customer1]['coordinates']['x'] , instance[customer1]['coordinates']['y'])
+    print(customer2," ",instance[customer2]['coordinates']['x'] , instance[customer2]['coordinates']['y'])
+
+    return ((instance[customer1]['coordinates']['x'] - instance[customer2]['coordinates']['x'])**2 + \
+        (instance[customer1]['coordinates']['y'] - instance[customer2]['coordinates']['y'])**2)**0.5
 
 def individual_to_route_decoding(individual, instance):
     route = []
@@ -122,9 +180,10 @@ def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_c
     total_cost = 0
     route = individual_to_route_decoding(individual, instance)
     total_cost = 0
+    sub_route_distance = 0
+    
     for sub_route in route:
         sub_route_time_cost = 0
-        sub_route_distance = 0
         elapsed_time = 0
         last_customer_id = 0
         for customer_id in sub_route:
@@ -144,14 +203,18 @@ def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_c
             # Update last customer ID
             last_customer_id = customer_id
         # Calculate transport cost
-        sub_route_distance = sub_route_distance + instance['distance_matrix'][last_customer_id][0]
+        # sub_route_distance = sub_route_distance + instance['distance_matrix'][last_customer_id][0]
         sub_route_transport_cost = init_cost + unit_cost * sub_route_distance
         # Obtain sub-route cost
         sub_route_cost = sub_route_time_cost + sub_route_transport_cost
         # Update total cost
-        total_cost = total_cost + sub_route_cost
-    fitness = 1.0 / total_cost
-    return (fitness, )
+        total_cost = total_cost + sub_route_cost 
+    # fitness = 1.0 / total_cost
+    fitness = sub_route_distance
+    # print("Helloooo",fitness)
+    # return (fitness,)
+    
+    return (fitness,)
  
 def cx_partially_mapped(ind1, ind2):
 
@@ -180,11 +243,11 @@ def cx_partially_mapped(ind1, ind2):
     i=0
 
 
-    for t1,t2 in rule1to2:
-        print(f't1 {t1} t2 {t2}')
+    # for t1,t2 in rule1to2:
+    #     print(f't1 {t1} t2 {t2}')
 
 
-    print("before cross ",child1)
+    # print("before cross ",child1)
     while i<len(child1):
         
         if(child1[i]==0):
@@ -209,8 +272,8 @@ def inverse_mutation(individual):
     temp = individual[start:stop+1]
     temp.reverse()
     individual[start:stop+1] = temp
-    return (individual, )
-
+    return (individual,)
+JSONData={}
 def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_size, pop_size, \
     cx_pb, mut_pb, n_gen, export_csv=False, customize_data=False):
  
@@ -218,7 +281,9 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     #print(os.path.join(BASE_DIR, 'data', 'json'))
 
     json_file = os.path.join(json_data_dir, f'{instance_name}.json')
+    JSONData = json_file
     instance = load_instance(json_file=json_file)
+    #print(instance)
     if instance is None:
         print("Please Check Your file path")
         return
@@ -226,32 +291,25 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     creator.create('Individual', list, fitness=creator.FitnessMax)
     toolbox = base.Toolbox()
     # Attribute generator
-    t1= toolbox.register('indexes', random.sample, range(1, ind_size + 1), ind_size)
-    print("t1 ",t1)
+    toolbox.register('indexes', random.sample, range(1, ind_size + 1), ind_size)
     # Structure initializers
-    t2= toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.indexes)
-    print("t2 ",t2)
-    t3 = toolbox.register('population', tools.initRepeat, list, toolbox.individual)
-    print("t3 ", t3)
+    toolbox.register('individual', tools.initIterate, creator.Individual, toolbox.indexes)
+    toolbox.register('population', tools.initRepeat, list, toolbox.individual)
     # Operator registering
-    t4 = toolbox.register('evaluate', evaluate_individual, instance=instance, unit_cost=unit_cost, \
+    toolbox.register('evaluate', evaluate_individual, instance=instance, unit_cost=unit_cost, \
         init_cost=init_cost, wait_cost=wait_cost, delay_cost=delay_cost)
-    print("t4 ",t4)
     # toolbox.register('select', tools.selRoulette) #FPS
-    t5 = toolbox.register('select', tools.selRoulette) #Fitness Proportionate
-    print("t5 ", t5)
-    t6=toolbox.register('mate', cx_partially_mapped)
-    print("t6 ", t6)
-    t7=toolbox.register('mutate', inverse_mutation)
-    print("t7 ", t7)
-    print(pop_size)
+    toolbox.register('select', tools.selRoulette) #Fitness Proportionate
+    toolbox.register('mate', cx_partially_mapped)
+    toolbox.register('mutate', inverse_mutation)
     pop = toolbox.population(n=pop_size)
-    print("t8 ", pop)
-
+    
     print('Start of evolution')
     # Evaluate the entire population
+    #print(len(pop))
     fitnesses = list(map(toolbox.evaluate, pop))
-    # print("fit ",fitnesses)
+    #print("Data ",fitnesses)
+   
     for ind, fit in zip(pop, fitnesses):
         ind.fitness.values = fit
     #print(f'  Evaluated {len(pop)} individuals')
@@ -293,11 +351,13 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
         print(f'  Avg {mean}')
         print(f'  Std {std}')
        
+    #print(JSONData)
     print('-- End of (successful) evolution --')
     best_ind = tools.selBest(pop, 1)[0]
+    print("Total Selected ",len(best_ind))
     print(f'Best individual: {best_ind}')
     print(f'Fitness: {best_ind.fitness.values[0]}')
-    print_route(ind2route(best_ind, instance))
+    print_route(ind2route(best_ind, instance),instance)
     print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
 
@@ -315,8 +375,8 @@ def main():
 
     ind_size = 100
     pop_size = 400
-    cx_pb = 0.85
-    mut_pb = 0.02
+    cx_pb = 0.50
+    mut_pb = 0.25
     n_gen = 300
 
     export_csv = True
