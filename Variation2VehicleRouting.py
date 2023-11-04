@@ -141,6 +141,18 @@ def calculate_distance(customer1, customer2):
     return ((customer1['coordinates']['x'] - customer2['coordinates']['x'])**2 + \
         (customer1['coordinates']['y'] - customer2['coordinates']['y'])**2)**0.5
 
+def calculate_distance(customer1, customer2,instance):
+    if(customer1 == "customer_0"):
+
+        return ((40 - instance[customer2]['coordinates']['x']**2 + \
+                50 - instance[customer2]['coordinates']['y'])**2)**0.5
+    # print(customer1," ",instance[customer1]['coordinates']['x'] , instance[customer1]['coordinates']['y'])
+    # print(customer2," ",instance[customer2]['coordinates']['x'] , instance[customer2]['coordinates']['y'])
+
+    return ((instance[customer1]['coordinates']['x'] - instance[customer2]['coordinates']['x'])**2 + \
+        (instance[customer1]['coordinates']['y'] - instance[customer2]['coordinates']['y'])**2)**0.5
+
+
 def individual_to_route_decoding(individual, instance):
     route = []
     vehicle_capacity = instance['vehicle_capacity']
@@ -328,7 +340,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     best_ind = tools.selBest(pop, 1)[0]
     print(f'Best individual: {best_ind}')
     print(f'Fitness: {best_ind.fitness.values[0]}')
-    print_route(ind2route(best_ind, instance))
+    print_route(ind2route(best_ind, instance),instance)
     print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
 
