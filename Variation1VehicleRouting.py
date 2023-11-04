@@ -16,7 +16,7 @@ def print_route(route, instance,merge=False):
     #print("customer X-cor ", json[])
     for sub_route in route:
         sub_route_distance = 0
-        sub_route_count += 1
+        
         sub_route_str = '0'
         
         for customer_id in sub_route:
@@ -25,10 +25,18 @@ def print_route(route, instance,merge=False):
             route_str = f'{route_str} - {customer_id}'
             
         sub_route_str = f'{sub_route_str} - 0'
-        if not merge:
-            for i in range (sub_route_count,len(route)):
+        for i in range (sub_route_count,len(route)):
                for j in range (0, len(sub_route)-1):
+                   #print ("customer ",route[i][j], "customer ",route[i][j+1])
                     sub_route_distance+= calculate_distance("customer_"+str(route[i][j]),"customer_"+str(route[i][j+1]),instance) 
+
+                
+               #print("route over ",sub_route_count)
+               break
+        sub_route_count += 1
+        if not merge:
+            
+                    #sub_route_distance+= calculate_distance("customer_"+str(route[i][j]),"customer_"+str(route[i][j+1]),instance) 
 
             print(f'  Vehicle {sub_route_count}\'s route: {sub_route_str} total-area covered {sub_route_distance}')
       
@@ -131,8 +139,8 @@ def calculate_distance(customer1, customer2,instance):
 
         return ((40 - instance[customer2]['coordinates']['x']**2 + \
                 50 - instance[customer2]['coordinates']['y'])**2)**0.5
-    print(customer1," ",instance[customer1]['coordinates']['x'] , instance[customer1]['coordinates']['y'])
-    print(customer2," ",instance[customer2]['coordinates']['x'] , instance[customer2]['coordinates']['y'])
+    # print(customer1," ",instance[customer1]['coordinates']['x'] , instance[customer1]['coordinates']['y'])
+    # print(customer2," ",instance[customer2]['coordinates']['x'] , instance[customer2]['coordinates']['y'])
 
     return ((instance[customer1]['coordinates']['x'] - instance[customer2]['coordinates']['x'])**2 + \
         (instance[customer1]['coordinates']['y'] - instance[customer2]['coordinates']['y'])**2)**0.5
