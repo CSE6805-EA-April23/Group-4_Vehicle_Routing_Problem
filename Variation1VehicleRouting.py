@@ -368,7 +368,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     print("Total Selected ",len(best_ind))
     print(f'Best individual: {best_ind}')
     print(f'Fitness: {best_ind.fitness.values[0]}')
-    print_route(ind2route(best_ind, instance),instance)
+    print_route(individual_to_route_decoding(best_ind, instance),instance)
     print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
 
