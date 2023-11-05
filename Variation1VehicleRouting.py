@@ -6,8 +6,9 @@ from deap import base, creator, tools
 import fnmatch
 from json import load, dump
 from filelocation import filePath
-# -*- coding: utf-8 -*-
 
+
+#vehicle route printing
 def print_route(route, instance,merge=False):
     route_str = '0'
     sub_route_count = 0
@@ -47,6 +48,8 @@ def print_route(route, instance,merge=False):
         print(route_str)  
     print("Total Distance Covered by All Vehicles ",total_routeCovered)
 
+
+#file path creation
 def guess_path_type(path):
     if os.path.isfile(path):
         return 'File'
@@ -58,6 +61,8 @@ def guess_path_type(path):
         return 'Mount Point'
     return 'Path'
 
+
+#file path checking
 def exist(path, overwrite=False, display_info=True):
     if os.path.exists(path):
         if overwrite:
@@ -72,6 +77,7 @@ def exist(path, overwrite=False, display_info=True):
     #     print(f'{guess_path_type(path)}: {path} does not exist.')
     return False
 
+#converting json data to useful format
 def load_instance(json_file):
     #Converted filePath generic for All
     if exist(path=filePath(), overwrite=False, display_info=True):
@@ -98,6 +104,7 @@ def merge_rules(rules):
                     is_fully_merged = False
     return rules, is_fully_merged
 
+#euclidian distance calculation
 def calculate_distance(customer1, customer2,instance):
     if(customer1 == "customer_0"):
 
@@ -109,6 +116,7 @@ def calculate_distance(customer1, customer2,instance):
     return ((instance[customer1]['coordinates']['x'] - instance[customer2]['coordinates']['x'])**2 + \
         (instance[customer1]['coordinates']['y'] - instance[customer2]['coordinates']['y'])**2)**0.5
 
+#route decoding for fitness calculation
 def individual_to_route_decoding(individual, instance):
     route = []
     vehicle_capacity = instance['vehicle_capacity']
@@ -147,6 +155,7 @@ def individual_to_route_decoding(individual, instance):
         route.append(sub_route)
     return route
  
+ #fitness calculation process
 def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_cost=0, delay_cost=0):
    
     total_cost = 0
@@ -188,6 +197,7 @@ def evaluate_individual(individual, instance, unit_cost=1.0, init_cost=0, wait_c
     
     return (fitness,)
  
+ #crossover function
 def cx_partially_mapped(ind1, ind2):
 
     child1 = [0]*len(ind1)
@@ -238,6 +248,7 @@ def cx_partially_mapped(ind1, ind2):
     #print("CROSS ",child1)
     return ind1, ind2
 
+#mutation function
 def inverse_mutation(individual):
     
     start, stop = sorted(random.sample(range(len(individual)), 2))
@@ -245,8 +256,9 @@ def inverse_mutation(individual):
     temp.reverse()
     individual[start:stop+1] = temp
     return (individual,)
-JSONData={}
-def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_size, pop_size, \
+
+#driver code
+def run_vehicleRoutingMainFunction(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_size, pop_size, \
     cx_pb, mut_pb, n_gen, export_csv=False, customize_data=False):
  
     json_data_dir = os.path.join(BASE_DIR, 'data', 'json')
@@ -334,7 +346,7 @@ def run_gavrptw(instance_name, unit_cost, init_cost, wait_cost, delay_cost, ind_
     print(f'Total cost: {1 / best_ind.fitness.values[0]}')
 
 
-
+#main Function
 def main():
     '''main()'''
     random.seed(64)
@@ -354,7 +366,7 @@ def main():
 
     export_csv = True
 
-    run_gavrptw(instance_name=instance_name, unit_cost=unit_cost, init_cost=init_cost, \
+    run_vehicleRoutingMainFunction(instance_name=instance_name, unit_cost=unit_cost, init_cost=init_cost, \
         wait_cost=wait_cost, delay_cost=delay_cost, ind_size=ind_size, pop_size=pop_size, \
         cx_pb=cx_pb, mut_pb=mut_pb, n_gen=n_gen, export_csv=export_csv)
 
